@@ -4,49 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>inventory-management</title>
+    <title>Inventory Management - Warehouse IoF System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
-            text-align: center;
         }
 
         .container {
-            max-width: 400px;
-            margin: 0 auto;
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
+            text-align: center;
             font-size: 24px;
+        }
+
+        .search-bar {
+            display: flex;
             margin-bottom: 20px;
         }
 
-        a {
-            display: block;
-            margin-top: 20px;
+        .search-bar input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
             padding: 10px;
             background-color: #007BFF;
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
         }
 
-        a:hover {
+        .search-bar button:hover {
             background-color: #0056b3;
+        }
+
+        .inventory-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .inventory-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inventory-list li:last-child {
+            border-bottom: none;
+        }
+
+        .inventory-list .item-details {
+            font-size: 16px;
+            flex-grow: 1;
+        }
+
+        .inventory-list .item-quantity {
+            margin-left: 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .inventory-list .item-lot {
+            font-size: 14px;
+        }
+
+        .inventory-list .item-expiry {
+            font-size: 14px;
+            color: #FF5733; /* Expiry date color */
+        }
+
+        .update-inventory {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .update-inventory select, .update-inventory input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .update-inventory button {
+            padding: 10px 20px;
+            background-color: #28A745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .update-inventory button:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .search-bar input[type="text"],
+            .search-bar button,
+            .update-inventory select,
+            .update-inventory input,
+            .update-inventory button {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Check Orders Page</h1>
-    <p>This is the placeholder page for checking orders functionality.</p>
-    <a href="index.html">Back to Menu</a>
+    <h1>Inventory Management</h1>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="text" id="searchQuery" placeholder="Search by Product, LOT, or Position">
+        <button onclick="searchInventory()">Search</button>
+    </div>
+
+    <!-- Inventory List -->
+    <ul class="inventory-list" id="inventoryList">
+        <!-- Inventory items will be dynamically inserted here -->
+    </ul>
+
+    <!-- Update Inventory -->
+    <div class="update-inventory">
+        <input type="text" id="productName" placeholder="Product Name">
+        <input type="text" id="lotNumber" placeholder="LOT Number">
+        <input type="date" id="expiryDate" placeholder="Expiry Date">
+        <input type="number" id="quantity" placeholder="Quantity">
+        <button onclick="addInventoryItem()">Add/Update Item</button>
+    </div>
 </div>
+
+<script>
+    // Sample data for inventory
+    var inventory = [
+        { product: 'Product A', quantity: 100, lot: 'LOT001', expiry: '2024-12-31', position: 'P01' },
+        { product: 'Product B', quantity: 50, lot: 'LOT002', expiry: '2025-01-15', position: 'P02' },
+        { product: 'Product C', quantity: 200, lot: 'LOT003', expiry: '2023-11-01', position: 'P03' }
+    ];
+
+    // Function to load inventory items into the list
+    function loadInventory() {
+        var inventoryList = document.getElementById('inventoryList');
+        inventoryList.innerHTML = ''; // Clear previous list
+
+        inventory.forEach(function(item) {
+            var inventoryItem = document.createElement('li');
+            inventoryItem.classList.add('inventory-item');
+            inventoryItem.innerHTML = `
+                <div class="item-details">
+                    <strong>Product:</strong> ${item.product}<br>
+                    <strong>Position:</strong> ${item.position} <br>
+                    <span class="item-lot"><strong>LOT:</strong> ${item.lot}</span><br>
+                    <span class="item-expiry"><strong>Expiry Date:</strong> ${item.expiry}</span>
+                </div>
+                <span class="item-quantity">${item.quantity}</span>
+            `;
+            inventoryList.appendChild(inventoryItem);
+        });
+    }
+
+    // Function to search inventory
+    function searchInventory() {
+        var query = document.getElementById('searchQuery').value.toLowerCase();
+        var filteredInventory = inventory.filter(function(item) {
+            return item.product.toLowerCase().includes(query) ||
+                   item.lot.toLowerCase().includes(query) ||
+                   item.position.toLowerCase().includes(query);
+        });
+
+        if (filteredInventory.length > 0) {
+            inventory = filteredInventory;
+        } else {
+            alert('No inventory items found matching your search criteria.');
+        }
+
+        loadInventory();
+    }
+
+    // Function to add or update inventory items
+    function addInventoryItem() {
+        var productName = document.getElementById('productName').value;
+        var lotNumber = document.getElementById('lotNumber').value;
+        var expiryDate = document.getElementById('expiryDate').value;
+        var quantity = document.getElementById('quantity').value;
+
+        // Check if all fields are filled
+        if (productName && lotNumber && expiryDate && quantity) {
+            var existingItem = inventory.find(function(item) {
+                return item.product === productName && item.lot === lotNumber;
+            });
+
+            if (existingItem) {
+                existingItem.quantity = quantity;
+                existingItem.expiry = expiryDate;
+                alert('Inventory item updated successfully.');
+            } else {
+                inventory.push({
+                    product: productName,
+                    lot: lotNumber,
+                    expiry: expiryDate,
+                    quantity: quantity,
+                    position: 'P' + (inventory.length + 1) // Automatically assign a position for demo purposes
+                });
+                alert('Inventory item added successfully.');
+            }
+
+            loadInventory();
+        } else {
+            alert('Please fill out all fields.');
+        }
+    }
+
+    // Load inventory on page load
+    loadInventory();
+</script>
 
 </body>
 </html>
