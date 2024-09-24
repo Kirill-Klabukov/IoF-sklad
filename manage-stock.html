@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>manage-stock</title>
+    <title>Manage Stock - LogiCore Systems</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -23,6 +23,49 @@
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28A745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
         }
 
         a {
@@ -43,10 +86,95 @@
 <body>
 
 <div class="container">
-    <h1>Check Orders Page</h1>
-    <p>This is the placeholder page for checking orders functionality.</p>
+    <h1>Manage Stock</h1>
+
+    <!-- Form for adding or updating stock -->
+    <form id="stockForm">
+        <input type="text" id="productCode" placeholder="Product Code" required>
+        <input type="number" id="quantity" placeholder="Quantity" required>
+        <input type="text" id="location" placeholder="Location" required>
+        <button type="submit">Add or Update Stock</button>
+    </form>
+
+    <!-- Table to display the current stock -->
+    <table id="stockTable">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Location</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Stock items will be dynamically added here -->
+        </tbody>
+    </table>
+
     <a href="index.html">Back to Menu</a>
 </div>
+
+<script>
+    // Example stock data
+    let stock = [
+        { product: "Amoxicillin 500mg", location: "A1", quantity: 100 },
+        { product: "Paracetamol 500mg", location: "B2", quantity: 50 },
+        { product: "Ibuprofen 200mg", location: "C3", quantity: 75 }
+    ];
+
+    // Function to update the stock table
+    function updateStockTable() {
+        const stockTableBody = document.getElementById('stockTable').getElementsByTagName('tbody')[0];
+        stockTableBody.innerHTML = ''; // Clear the table body
+
+        stock.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.product}</td>
+                <td>${item.location}</td>
+                <td>${item.quantity}</td>
+                <td><button onclick="removeStock(${index})">Remove</button></td>
+            `;
+            stockTableBody.appendChild(row);
+        });
+    }
+
+    // Function to remove a stock item
+    function removeStock(index) {
+        stock.splice(index, 1); // Remove the item from the array
+        updateStockTable(); // Refresh the table
+    }
+
+    // Handle form submission for adding/updating stock
+    document.getElementById('stockForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get values from input fields
+        const productCode = document.getElementById('productCode').value.trim();
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const location = document.getElementById('location').value.trim();
+
+        // Check if the product already exists in stock
+        const existingProduct = stock.find(item => item.product === productCode && item.location === location);
+
+        if (existingProduct) {
+            // Update the quantity of the existing product
+            existingProduct.quantity += quantity;
+        } else {
+            // Add a new product to the stock
+            stock.push({ product: productCode, location: location, quantity: quantity });
+        }
+
+        // Clear the form
+        document.getElementById('stockForm').reset();
+
+        // Refresh the stock table
+        updateStockTable();
+    });
+
+    // Initial call to display the stock
+    updateStockTable();
+</script>
 
 </body>
 </html>
