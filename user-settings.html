@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>user-settings</title>
+    <title>User Settings - Warehouse IoF System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,10 +43,32 @@
 <body>
 
 <div class="container">
-    <h1>Check Orders Page</h1>
-    <p>This is the placeholder page for checking orders functionality.</p>
+    <h1>User Settings</h1>
+    <p>Here you can manage your user settings.</p>
+
+    <a href="profile.html">Profile Settings</a>
+
+    <!-- Admin Settings - Visible only for admins -->
+    <div id="adminSettings" style="display: none;">
+        <h2>Admin Settings</h2>
+        <a href="manage-users.html">Manage User Accounts</a>
+    </div>
+
     <a href="index.html">Back to Menu</a>
 </div>
+
+<script>
+    // Sample user data (In a real-world application, this would come from a server)
+    const user = {
+        username: "john_doe",
+        role: "admin"  // Can be "admin" or "user"
+    };
+
+    // Display admin settings if the user is an admin
+    if (user.role === "admin") {
+        document.getElementById("adminSettings").style.display = "block";
+    }
+</script>
 
 </body>
 </html>
