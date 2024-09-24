@@ -117,7 +117,7 @@
 <body>
 
 <div class="container">
-    <h1>LogiCore</h1>
+    <h1>Logi-Core</h1>
 
     <!-- Header with user information -->
     <div class="header">
@@ -142,12 +142,10 @@
             <li><a href="scan-products.html" class="menu-item">3. Scan Products</a></li>
             <li><a href="manage-stock.html" class="menu-item">4. Manage Stock</a></li>
             <li><a href="view-reports.html" class="menu-item">5. View Reports</a></li>
-            <li><a href="user-settings.html" class="menu-item">6. User Settings</a></li>
+            <li><a href="user-settings.html" id="adminMenuItem" class="menu-item">6. User Settings</a></li> <!-- Admin only -->
             <li><a href="shipping-details.html" class="menu-item">7. Shipping Details</a></li>
             <li><a href="help-support.html" class="menu-item">8. Help & Support</a></li>
-            <!-- Admin menu item -->
-            <li><a href="manage-users.html" id="adminMenuItem" class="menu-item">9. Manage User Accounts</a></li>
-            <li><a href="#" id="logoutLink">10. Log Out</a></li>
+            <li><a href="#" id="logoutLink">9. Log Out</a></li>
         </ul>
     </div>
 </div>
@@ -172,7 +170,7 @@
     document.getElementById('loginForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Предотвратить отправку формы
 
-        // Получить значения из полей ввода и преобразовать в верхний регистр
+        // Получить значения из полей ввода
         var loginInput = document.getElementById('login').value.toUpperCase();
         var passwordInput = document.getElementById('password').value.toUpperCase();
         var position = 'FORK'; // Установить позицию на "FORK"
@@ -191,14 +189,13 @@
                     localStorage.setItem('userLastName', user.lastName);
                     localStorage.setItem('isLoggedIn', true);
                     localStorage.setItem('userPosition', position);
-                    localStorage.setItem('userRole', user.role);  // Сохраняем роль пользователя
 
                     // Показать меню и скрыть форму входа
                     document.body.classList.add('logged-in');
                     document.querySelector('.user-info').textContent = `Welcome, ${user.firstName} ${user.lastName}`;
 
-                    // Проверка роли пользователя и показ ссылки "Manage User Accounts"
-                    if (user.role === 'admin') {
+                    // Если логин админа, показать пункт 6
+                    if (loginInput === 'ADMIN') {
                         document.getElementById('adminMenuItem').style.display = 'block';
                     }
                 } else {
@@ -221,7 +218,6 @@
         localStorage.removeItem('userLastName');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userPosition');
-        localStorage.removeItem('userRole');  // Очистить роль пользователя
         // Очистить поля ввода (если они будут показаны снова)
         document.getElementById('login').value = '';
         document.getElementById('password').value = '';
@@ -238,9 +234,9 @@
             var lastName = localStorage.getItem('userLastName');
             document.querySelector('.user-info').textContent = `Welcome, ${firstName} ${lastName}`;
 
-            // Проверка роли пользователя
-            var userRole = localStorage.getItem('userRole');
-            if (userRole === 'admin') {
+            // Проверка логина пользователя
+            var loginInput = localStorage.getItem('userLogin');
+            if (loginInput === 'ADMIN') {
                 document.getElementById('adminMenuItem').style.display = 'block';
             }
         }
