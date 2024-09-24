@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>view-reports</title>
+    <title>Scan Products - Order Picking</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -23,6 +23,49 @@
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28A745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
         }
 
         a {
@@ -43,10 +86,117 @@
 <body>
 
 <div class="container">
-    <h1>Check Orders Page</h1>
-    <p>This is the placeholder page for checking orders functionality.</p>
+    <h1>Scan Products for Order</h1>
+
+    <!-- Select order to pick -->
+    <form id="orderSelectionForm">
+        <input type="text" id="orderCodeInput" placeholder="Enter or scan order code" required>
+        <button type="submit">Select Order</button>
+    </form>
+
+    <!-- Table to display the items to pick -->
+    <table id="orderTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Location</th>
+                <th>Quantity</th>
+                <th>Picked</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Items to pick will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <!-- Button to confirm order picking -->
+    <button id="confirmPickingBtn" style="display: none;">Confirm Picking</button>
+
     <a href="index.html">Back to Menu</a>
 </div>
+
+<script>
+    // Example of orders with products and their locations
+    const orders = {
+        "ORDER001": [
+            { product: "Amoxicillin 500mg", location: "A1", quantity: 5 },
+            { product: "Paracetamol 500mg", location: "B3", quantity: 3 },
+            { product: "Ibuprofen 200mg", location: "C2", quantity: 7 }
+        ],
+        "ORDER002": [
+            { product: "Ciprofloxacin 250mg", location: "A2", quantity: 10 },
+            { product: "Aspirin 81mg", location: "B1", quantity: 2 }
+        ]
+    };
+
+    // Selected order for picking
+    let selectedOrder = [];
+
+    // Handle order selection form submission
+    document.getElementById('orderSelectionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get the order code from input
+        const orderCode = document.getElementById('orderCodeInput').value.trim().toUpperCase();
+
+        // Check if the order exists
+        if (orders[orderCode]) {
+            selectedOrder = orders[orderCode];
+
+            // Display the order items in the table
+            displayOrderItems();
+
+            // Show the order table and confirm button
+            document.getElementById('orderTable').style.display = 'table';
+            document.getElementById('confirmPickingBtn').style.display = 'inline-block';
+        } else {
+            alert('Order not found. Please try again.');
+        }
+    });
+
+    // Function to display order items in the table
+    function displayOrderItems() {
+        const orderTableBody = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
+        orderTableBody.innerHTML = ''; // Clear the table
+
+        selectedOrder.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.product}</td>
+                <td>${item.location}</td>
+                <td>${item.quantity}</td>
+                <td><input type="checkbox" class="picked-checkbox" data-index="${index}"></td>
+            `;
+            orderTableBody.appendChild(row);
+        });
+    }
+
+    // Handle order picking confirmation
+    document.getElementById('confirmPickingBtn').addEventListener('click', function() {
+        // Check if all items are picked
+        const checkboxes = document.getElementsByClassName('picked-checkbox');
+        let allPicked = true;
+
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (!checkboxes[i].checked) {
+                allPicked = false;
+                break;
+            }
+        }
+
+        if (allPicked) {
+            alert('Order picking confirmed!');
+            console.log('Picked items:', selectedOrder);
+
+            // Reset the order and hide the table and button
+            selectedOrder = [];
+            document.getElementById('orderTable').style.display = 'none';
+            document.getElementById('confirmPickingBtn').style.display = 'none';
+        } else {
+            alert('Please pick all items before confirming.');
+        }
+    });
+</script>
 
 </body>
 </html>
