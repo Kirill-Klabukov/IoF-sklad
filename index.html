@@ -107,6 +107,11 @@
         .logged-in .header {
             display: block;
         }
+
+        /* Admin-only link */
+        #adminMenuItem {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -140,7 +145,9 @@
             <li><a href="user-settings.html" class="menu-item">6. User Settings</a></li>
             <li><a href="shipping-details.html" class="menu-item">7. Shipping Details</a></li>
             <li><a href="help-support.html" class="menu-item">8. Help & Support</a></li>
-            <li><a href="#" id="logoutLink">9. Log Out</a></li>
+            <!-- Admin menu item -->
+            <li><a href="manage-users.html" id="adminMenuItem" class="menu-item">9. Manage User Accounts</a></li>
+            <li><a href="#" id="logoutLink">10. Log Out</a></li>
         </ul>
     </div>
 </div>
@@ -184,10 +191,16 @@
                     localStorage.setItem('userLastName', user.lastName);
                     localStorage.setItem('isLoggedIn', true);
                     localStorage.setItem('userPosition', position);
+                    localStorage.setItem('userRole', user.role);  // Сохраняем роль пользователя
 
                     // Показать меню и скрыть форму входа
                     document.body.classList.add('logged-in');
                     document.querySelector('.user-info').textContent = `Welcome, ${user.firstName} ${user.lastName}`;
+
+                    // Проверка роли пользователя и показ ссылки "Manage User Accounts"
+                    if (user.role === 'admin') {
+                        document.getElementById('adminMenuItem').style.display = 'block';
+                    }
                 } else {
                     alert('Invalid login or password. Try again.');
                 }
@@ -208,6 +221,7 @@
         localStorage.removeItem('userLastName');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userPosition');
+        localStorage.removeItem('userRole');  // Очистить роль пользователя
         // Очистить поля ввода (если они будут показаны снова)
         document.getElementById('login').value = '';
         document.getElementById('password').value = '';
@@ -223,6 +237,12 @@
             var firstName = localStorage.getItem('userFirstName');
             var lastName = localStorage.getItem('userLastName');
             document.querySelector('.user-info').textContent = `Welcome, ${firstName} ${lastName}`;
+
+            // Проверка роли пользователя
+            var userRole = localStorage.getItem('userRole');
+            if (userRole === 'admin') {
+                document.getElementById('adminMenuItem').style.display = 'block';
+            }
         }
     };
 </script>
