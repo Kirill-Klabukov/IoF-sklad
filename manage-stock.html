@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -29,7 +29,7 @@
             margin-bottom: 20px;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], input[type="date"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -90,9 +90,12 @@
 
     <!-- Form for adding or updating stock -->
     <form id="stockForm">
-        <input type="text" id="productCode" placeholder="Product Code" required>
+        <input type="text" id="productName" placeholder="Product Name" required>
+        <input type="text" id="barcode" placeholder="Product Barcode" required>
+        <input type="text" id="lotNumber" placeholder="LOT Number" required>
+        <input type="date" id="expiryDate" placeholder="Expiry Date" required>
         <input type="number" id="quantity" placeholder="Quantity" required>
-        <input type="text" id="location" placeholder="Location" required>
+        <input type="text" id="location" placeholder="Location/Zone" required>
         <button type="submit">Add or Update Stock</button>
     </form>
 
@@ -100,9 +103,12 @@
     <table id="stockTable">
         <thead>
             <tr>
-                <th>Product</th>
-                <th>Location</th>
+                <th>Product Name</th>
+                <th>Barcode</th>
+                <th>LOT Number</th>
+                <th>Expiry Date</th>
                 <th>Quantity</th>
+                <th>Location</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -116,11 +122,7 @@
 
 <script>
     // Example stock data
-    let stock = [
-        { product: "Amoxicillin 500mg", location: "A1", quantity: 100 },
-        { product: "Paracetamol 500mg", location: "B2", quantity: 50 },
-        { product: "Ibuprofen 200mg", location: "C3", quantity: 75 }
-    ];
+    let stock = [];
 
     // Function to update the stock table
     function updateStockTable() {
@@ -130,9 +132,12 @@
         stock.forEach((item, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${item.product}</td>
-                <td>${item.location}</td>
+                <td>${item.productName}</td>
+                <td>${item.barcode}</td>
+                <td>${item.lotNumber}</td>
+                <td>${item.expiryDate}</td>
                 <td>${item.quantity}</td>
+                <td>${item.location}</td>
                 <td><button onclick="removeStock(${index})">Remove</button></td>
             `;
             stockTableBody.appendChild(row);
@@ -150,19 +155,22 @@
         event.preventDefault();
 
         // Get values from input fields
-        const productCode = document.getElementById('productCode').value.trim();
+        const productName = document.getElementById('productName').value.trim();
+        const barcode = document.getElementById('barcode').value.trim();
+        const lotNumber = document.getElementById('lotNumber').value.trim();
+        const expiryDate = document.getElementById('expiryDate').value;
         const quantity = parseInt(document.getElementById('quantity').value);
         const location = document.getElementById('location').value.trim();
 
-        // Check if the product already exists in stock
-        const existingProduct = stock.find(item => item.product === productCode && item.location === location);
+        // Check if the product with the same barcode and lot number already exists in stock
+        const existingProduct = stock.find(item => item.barcode === barcode && item.lotNumber === lotNumber);
 
         if (existingProduct) {
             // Update the quantity of the existing product
             existingProduct.quantity += quantity;
         } else {
             // Add a new product to the stock
-            stock.push({ product: productCode, location: location, quantity: quantity });
+            stock.push({ productName, barcode, lotNumber, expiryDate, quantity, location });
         }
 
         // Clear the form
