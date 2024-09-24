@@ -1,4 +1,4 @@
 login,password,firstName,lastName,position
-ADMIN,ADMIN,John,Doe,FORK
+ADMIN,ADMIN,Admin,-,FORK
 JDOE,1234,Jane,Doe,FORK
-ASMITH,PASS123,Adam,Smith,FORK
+ASMI,PASS123,Adam,Smith,FORK
