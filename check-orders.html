@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Check Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            width: 150px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header with user information -->
+    <div class="header">
+        <div class="user-info"></div>
+    </div>
+
+    <h1>Check Orders Page</h1>
+    <p>This is the placeholder page for checking orders functionality.</p>
+    <a href="index.html">Back to Menu</a>
+</div>
+
+<script>
+    // Проверка состояния входа при загрузке страницы
+    window.onload = function() {
+        var isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (!isLoggedIn) {
+            // Если пользователь не вошел, перенаправить на страницу входа
+            window.location.href = 'index.html';
+        } else {
+            // Если пользователь вошел, показать информацию о нем
+            var firstName = localStorage.getItem('userFirstName');
+            var lastName = localStorage.getItem('userLastName');
+            document.querySelector('.user-info').textContent = `Welcome, ${firstName} ${lastName}`;
+        }
+    };
+</script>
+
+</body>
+</html>

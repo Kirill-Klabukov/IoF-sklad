@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Warehouse IoF System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu li {
+            margin: 10px 0;
+        }
+
+        .menu li a {
+            display: block;
+            padding: 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .menu li a:hover {
+            background-color: #0056b3;
+        }
+
+        .header {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .header .user-info {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            input {
+                font-size: 14px;
+            }
+
+            .menu li a {
+                padding: 10px;
+            }
+        }
+
+        /* Hide menu initially */
+        .menu-container {
+            display: none;
+        }
+
+        /* Show menu if logged in */
+        .logged-in .login-form {
+            display: none;
+        }
+
+        .logged-in .menu-container {
+            display: block;
+        }
+
+        .logged-in .header {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Warehouse IoF System</h1>
+
+    <!-- Header with user information -->
+    <div class="header">
+        <div class="user-info"></div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-form">
+        <form id="loginForm">
+            <input type="text" id="login" placeholder="Enter your login" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <input type="text" id="position" value="FORK" readonly>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <!-- Menu (Initially Hidden) -->
+    <div class="menu-container">
+        <ul class="menu">
+            <li><a href="check-orders.html" class="menu-item">1. Check Orders</a></li>
+            <li><a href="inventory-management.html" class="menu-item">2. Inventory Management</a></li>
+            <li><a href="scan-products.html" class="menu-item">3. Scan Products</a></li>
+            <li><a href="manage-stock.html" class="menu-item">4. Manage Stock</a></li>
+            <li><a href="view-reports.html" class="menu-item">5. View Reports</a></li>
+            <li><a href="user-settings.html" class="menu-item">6. User Settings</a></li>
+            <li><a href="shipping-details.html" class="menu-item">7. Shipping Details</a></li>
+            <li><a href="help-support.html" class="menu-item">8. Help & Support</a></li>
+            <li><a href="#" id="logoutLink">9. Log Out</a></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // Функция для парсинга CSV в массив объектов
+    function parseCSV(data) {
+        const lines = data.trim().split('\n');
+        const headers = lines[0].split(',');
+        const users = lines.slice(1).map(line => {
+            const values = line.split(',');
+            let user = {};
+            headers.forEach((header, index) => {
+                user[header.trim()] = values[index].trim();
+            });
+            return user;
+        });
+        return users;
+    }
+
+    // Функция для симуляции проверки логина
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвратить отправку формы
+
+        // Получить значения из полей ввода и преобразовать в верхний регистр
+        var loginInput = document.getElementById('login').value.toUpperCase();
+        var passwordInput = document.getElementById('password').value.toUpperCase();
+        var position = 'FORK'; // Установить позицию на "FORK"
+
+        // Чтение CSV файла
+        fetch('users.csv')
+            .then(response => response.text())
+            .then(data => {
+                // Парсинг CSV данных
+                var users = parseCSV(data);
+                var user = users.find(u => u.login === loginInput && u.password === passwordInput);
+
+                if (user) {
+                    // Если пользователь найден, сохранить информацию в localStorage
+                    localStorage.setItem('userFirstName', user.firstName);
+                    localStorage.setItem('userLastName', user.lastName);
+                    localStorage.setItem('isLoggedIn', true);
+                    localStorage.setItem('userPosition', position);
+
+                    // Показать меню и скрыть форму входа
+                    document.body.classList.add('logged-in');
+                    document.querySelector('.user-info').textContent = `Welcome, ${user.firstName} ${user.lastName}`;
+                } else {
+                    alert('Invalid login or password. Try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error reading CSV:', error);
+                alert('An error occurred while processing your request.');
+            });
+    });
+
+    // Функция выхода из системы
+    document.getElementById('logoutLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        // Сбросить состояние входа
+        document.body.classList.remove('logged-in');
+        // Очистить сохраненные данные
+        localStorage.removeItem('userFirstName');
+        localStorage.removeItem('userLastName');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userPosition');
+        // Очистить поля ввода (если они будут показаны снова)
+        document.getElementById('login').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('position').value = 'FORK'; // Сброс позиции на "FORK"
+    });
+
+    // Проверка состояния входа при загрузке страницы
+    window.onload = function() {
+        var isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn) {
+            // Если пользователь вошел, показать меню и информацию о пользователе
+            document.body.classList.add('logged-in');
+            var firstName = localStorage.getItem('userFirstName');
+            var lastName = localStorage.getItem('userLastName');
+            document.querySelector('.user-info').textContent = `Welcome, ${firstName} ${lastName}`;
+        }
+    };
+</script>
+
+</body>
+</html>
